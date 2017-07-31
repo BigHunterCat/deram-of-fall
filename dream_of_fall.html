@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--lib文件夹的必须最先加载-->
+    <!--'-'该符号越多的越后加载,而且还要紧跟他的依赖-->
+    <!--比如dream-music-load就依赖dream-music-->
+    <meta charset="UTF-8">
+    <title>梦境坠落</title>
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/dream_canvas.css">
+    <script src="js/lib/jquery.js"></script>
+    <script src="js/lib/error.js"></script>
+    <script src="js/dream.js"></script>
+    <script src="js/dream-lib/dream-timer.js"></script>
+    <script src="js/music/dream-music.js"></script>
+    <script src="js/music/dream-music-load.js"></script>
+    <script src="js/music/dream-music-ready.js"></script>
+    <script src="js/music/dream-music-spectrum.js"></script>
+    <script src="js/screen/dream-screen.js"></script>
+    <script src="js/screen/dream-screen-draw.js"></script>
+    <script src="js/screen/dream-screen-load.js"></script>
+    <script src="js/screen/dream-screen-character.js"></script>
+    <script src="js/screen/dream-screen-terrainRandom.js"></script>
+    <script src="js/screen/dream-screen-terrainRandom-collisionDetection.js"></script>
+    <script src="js/control/control.js"></script>
+    <script src="js/control/control-keyboard.js"></script>
+    <script src="js/dream-game.js"></script>
+</head>
+<body>
+    <div id="dream"></div>
+    <canvas id="left_canvas"></canvas>
+    <canvas id="dream_canvas"></canvas>
+    <canvas id="right_canvas"></canvas>
+</body>
+</html>

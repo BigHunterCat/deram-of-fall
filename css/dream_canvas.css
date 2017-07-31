@@ -1,0 +1,17 @@
+/**
+ * Created by coffee_cat on 2017/7/22 0022.
+ */
+#dream_canvas{
+    position: absolute;
+    background: #26631f;
+}
+#left_canvas{
+    position: absolute;
+    background: #632321;
+    /*opacity:0.7;*/
+}
+#right_canvas{
+    position: absolute;
+    background: #223e63;
+    /*opacity:0.7;*/
+}
