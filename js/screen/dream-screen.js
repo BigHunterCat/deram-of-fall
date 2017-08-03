@@ -139,14 +139,20 @@ dream.screen = (function () {
         return true;
     };
 
+    // var setLeft_canvas = function () {
+    //     dream.screenConfig.leftCanvas = document.getElementById('left_canvas');
+    //     dream.screenConfig.leftCanvas.height = $(document).height();
+    //     dream.screenConfig.leftCanvas.width = ($(document).width()/4);
+    //     dream.screenConfig.left_canvas_height = dream.screenConfig .leftCanvas.height;
+    //     dream.screenConfig.left_canvas_width = dream.screenConfig .leftCanvas.width;
+    //     dream.screenConfig.leftCanvas .style.left = 0+'px';
+    //     dream.screen.left_ctx = dream.screenConfig .leftCanvas.getContext('2d');
+    // };
+
+    /*pixi版本*/
     var setLeft_canvas = function () {
-        dream.screenConfig .leftCanvas = document.getElementById('left_canvas');
-        dream.screenConfig .leftCanvas.height = $(document).height();
-        dream.screenConfig .leftCanvas.width = ($(document).width()/4);
-        dream.screenConfig.left_canvas_height = dream.screenConfig .leftCanvas.height;
-        dream.screenConfig.left_canvas_width = dream.screenConfig .leftCanvas.width;
-        dream.screenConfig .leftCanvas .style.left = 0+'px';
-        dream.screen.left_ctx = dream.screenConfig .leftCanvas.getContext('2d');
+        dream.screenConfig.leftPixiCanvas = new PIXI.Application(($(document).width()/4),$(document).height());
+        document.body.appendChild(dream.screenConfig.leftPixiCanvas.view);
     };
 
     var setDream_canvas = function () {

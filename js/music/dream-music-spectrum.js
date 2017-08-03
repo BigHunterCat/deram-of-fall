@@ -47,7 +47,7 @@ dream.music.spectrum = (function () {
     var playAndDrawMusic = function (musicName) {
         if(musicName===undefined){
             var audioName = dream.music.getMusicName();
-            config.audioHtml = dream.music.load.getMusic(audioName.battle1);
+            config.audioHtml = dream.music.load.getMusic(audioName.Dragon_Slayer);
         }else{
             config.audioHtml = dream.music.load.getMusic(musicName);
         }
@@ -58,9 +58,9 @@ dream.music.spectrum = (function () {
         config.dataArrayFrequency = new Uint8Array(config.analyser.frequencyBinCount);
         config.dataArrayTimeDomain = new Uint8Array(config.analyser.frequencyBinCount);
         /**/
-        drawCircle();
         config.audioHtml.play();
         visualSpectrum('testStyle');
+        // visualSpectrum();
     };
 
     /*
@@ -91,7 +91,8 @@ dream.music.spectrum = (function () {
     var visualSpectrum = function (styleName) {
         switch (styleName){
             case 'testStyle':
-                dream.timer.updateQueue(testStyle,'testStyle');
+                // dream.timer.updateQueue(testStyle,'testStyle');
+                testStyle();
                 break;
             default:
                 dream.timer.updateQueue(defaultStyle,'defaultStyle');
@@ -101,40 +102,32 @@ dream.music.spectrum = (function () {
     /*----Begin 样式----*/
 
     var testStyle = function () {
-        var x_p = dream.screenConfig.left_canvas_width/2;
-        var y_p = dream.screenConfig.left_canvas_height/2;
-        var left_num = config.dataArrayFrequency.length/config.visualNumber;
-        // dream.screen.left_ctx.translate(x,y);
-        analyserData();
-        var endPoint = 360/config.visualNumber;
-        for(var i=0;i<config.visualNumber-1;i++){
-        // for(var i=0;i<config.circlePosition.x.length-1;i++){
-            dream.screen.ctx.moveTo(config.circlePosition.x[i],config.circlePosition.y[i]);
-            var temp = (config.circlePosition.x[i]+config.circlePosition.x[i+1])/2;
-            dream.screen.ctx.quadraticCurveTo(temp,config.dataArrayFrequency[i],config.circlePosition.x[i+1],config.circlePosition.y[i+1]);
-            dream.screen.ctx.stroke();
+        var GraphicsArray = [];
+        for(var i=0;i<config.visualNumber;i++){
+            GraphicsArray.push(new PIXI.Graphics());
         }
-    };
-
-    /*x=a+rcosθ y=b+rsinθ（圆心(a,b)半径r的圆）*/
-    
-    var drawCircle = function () {
-        var x = dream.screenConfig.left_canvas_width/2;
-        var y = dream.screenConfig.left_canvas_height/2;
-        var radius = 200;
-        config.circlePosition = {
-            x:[],
-            y:[]
-        };
-        var t = 360/config.visualNumber;
-        for(var i=0;i<360;i++){
-            var a = x + radius*Math.cos((i*t)*2*Math.PI/360);
-            var b = y + radius*Math.sin((i*t)*2*Math.PI/360);
-            config.circlePosition.x[i] = Math.floor(a);
-            config.circlePosition.y[i] = Math.floor(b);
+        var s = 0;
+        var num = config.dataArrayFrequency.length/config.visualNumber;
+        // dream.screenConfig.leftPixiCanvas.ticker.add(function () {
+        dream.timer.updateQueue(function () {
+                analyserData();
+                s+=0.01;
+                for(var i=0;i<GraphicsArray.length;i++){
+                    // console.log(config.dataArrayFrequency[i*num]);
+                    GraphicsArray[i].clear();
+                    GraphicsArray[i].beginFill(0xFF9933);
+                    GraphicsArray[i].setTransform(dream.screenConfig.leftPixiCanvas.view.width/2,
+                        dream.screenConfig.leftPixiCanvas.view.height/2,1,1,s+(i*2));
+                    GraphicsArray[i].drawEllipse(0, 0, 100, 100+(config.dataArrayFrequency[i*(num-1)]-50));
+                    // GraphicsArray[i].drawEllipse(0, 0, 100, 100+(i*10));
+                    GraphicsArray[i].endFill();
+                }
         }
-        console.log( config.circlePosition.x);
-        console.log( config.circlePosition.y);
+    ,'testStyle');
+        // );
+        for(var i=0;i<GraphicsArray.length;i++){
+            dream.screenConfig.leftPixiCanvas.stage.addChild(GraphicsArray[i]);
+        }
     };
 
     /*
@@ -149,6 +142,10 @@ dream.music.spectrum = (function () {
         var left_num = config.dataArrayFrequency.length/config.visualNumber;
         var right_num = config.dataArrayTimeDomain.length/config.visualNumber;
         analyserData();
+        var b_y = [];
+        var b_x = [];
+        var b_width = [];
+        var b_left_height = [];
         /*只用绘制可视化的线条,所以config.visualNumber为循环条件*/
         for(var i=0;i<config.visualNumber;i++){
             var y = dream.screenConfig.left_canvas_height;
@@ -159,9 +156,30 @@ dream.music.spectrum = (function () {
             var x = i*width;
             var right_x = i*right_width;
             dream.screen.left_ctx.fillRect(x,y,width,left_height);
-            dream.screen.right_ctx.fillRect(right_x,y,right_width,right_height);
+            // dream.screen.right_ctx.fillRect(right_x,y,right_width,right_height);
+            b_x.push(x);
+            b_y.push(y);
+            b_width.push(width);
+            b_left_height.push(left_height);
+        }
+
+        for(var i=0;i<config.visualNumber-1;i++){
+            var x1 = b_x[i] + b_width[i];
+            var y1 = dream.screenConfig.left_canvas_height + b_left_height[i] - 50;
+            var x2 = b_x[i+1] + b_width[i+1];
+            var y2 = dream.screenConfig.left_canvas_height + b_left_height[i+1] - 50;
+            var r = 1;
+            if(b_left_height[i]<b_left_height[i+1]){
+                dream.screen.left_ctx.arcTo(x1,y1,x2,y1,r);
+            }
+            if(b_left_height[i]>b_left_height[i+1]){
+                dream.screen.left_ctx.arcTo(x1,y2,x2,y2,r);
+            }
+
+            dream.screen.left_ctx.stroke();
         }
     };
+
     /*----End 样式----*/
 
     /*

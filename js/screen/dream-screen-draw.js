@@ -20,11 +20,8 @@ dream.screen.draw = (function () {
     * */
     var clearLastFrame = function () {
         if(config.drawArray.length>0){
-            // dream.screen.ctx.clearRect(0,0,dream.screenConfig.canvas.width,dream.screenConfig.canvas.height);
             dream.screenConfig.canvas.width = dream.screenConfig.canvas_width;
-            // dream.screen.left_ctx.clearRect(0,0,dream.screenConfig.leftCanvas.width,dream.screenConfig.leftCanvas.height);
-            dream.screenConfig.leftCanvas.width = dream.screenConfig.left_canvas_width;
-            // dream.screen.right_ctx.clearRect(0,0,dream.screenConfig.rightCanvas.width,dream.screenConfig.rightCanvas.height);
+            // dream.screenConfig.leftCanvas.width = dream.screenConfig.left_canvas_width;
             dream.screenConfig.rightCanvas.width = dream.screenConfig.right_canvas_width;
         }
     };
