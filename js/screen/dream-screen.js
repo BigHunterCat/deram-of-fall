@@ -7,24 +7,23 @@ dream.screen = (function () {
         terrainRandomInitLoad:false,
         characterInitLoad:false,
         canvas_height:0,
-        canvas_width:0,
-        canvasId: '#dream_canvas'
+        canvas_width:0
     };
 
     var config = {
+        init:false,
         insertPlace:'#dream',
         photoName:{
             actor:'actor',
-            castle:'castle1',
-            decorativeTile:'decorativeTile',
+            bullet1:'bullet1',
+            fire1:'fire1',
             terrain1:'terrain1',
             terrain2:'terrain2'
         },
         photoSrc:{
-            // actorSrc:'img/icon_154_19.png',
             actorSrc:'img/icon.jpg',
-            castleSrc:'img/background/Castle1.png',
-            decorativeTileSrc:'img/background/DecorativeTile.png',
+            bullet1Src:'img/bullet/bullet1/Gun2_03.png',
+            fire1Src:'img/bullet/fire1/fire1_03.png',
             terrain1:'img/terrain/terrain1.jpg',
             terrain2:'img/terrain/terrain2.jpg'
         },
@@ -57,7 +56,6 @@ dream.screen = (function () {
         for(var i=0;i<config.photoNameArray.length;i++){
             dream.screen.load.pre_pictureLoad(config.photoNameArray[i],config.photoSrcArray[i]);
         }
-        dream.screen.load.photoCache();
         return true;
     };
 
@@ -73,41 +71,24 @@ dream.screen = (function () {
         * true:获取regexp对象
         * false:失败
     * */
-    var classify = function (regexPattern,savePlace) {
-        var reg = new RegExp(regexPattern);
-        for(var name in config.photoSrc){
-            if(reg.test(config.photoSrc[name])){
-                savePlace[name] = reg.exec(config.photoSrc[name])[1];
-            }
-        }
-        return savePlace;
-    };
+    // var classify = function (regexPattern,savePlace) {
+    //     var reg = new RegExp(regexPattern);
+    //     for(var name in config.photoSrc){
+    //         if(reg.test(config.photoSrc[name])){
+    //             savePlace[name] = reg.exec(config.photoSrc[name])[1];
+    //         }
+    //     }
+    //     return savePlace;
+    // };
 
-    /*
-    * 作用:
-        * 图片缓存后进行画面的初始化
-    * 参数:none
-    * return:
-        * true:
-        * false:
-    * */
-    var initScreenListen = function () {
-        if(dream.screenConfig.initLoad){
-            dream.timer.removeQueue('initScreenListen');
-            dream.screen.draw.initDraw();
-            classify('img\/terrain\/([a-zA-z0-9]*\)',config.terrainName);
-            classify('img\/background\/([a-zA-z0-9]*\)',config.backgroundName);
-            dream.screen.terrainRandom.initTerrainRandom();
-        }
-    };
 
     var getTerrainName = function () {
         return config.terrainName;
     };
 
-    var getBackgroundName = function () {
-        return config.backgroundName;
-    };
+    // var getBackgroundName = function () {
+    //     return config.backgroundName;
+    // };
 
     /*
     * 作用:
@@ -124,61 +105,59 @@ dream.screen = (function () {
 
     /*
      * 作用:
-         * 创建context对象,载入图片,监听图片是否缓存
+         * 初始化screen对象
      * 参数:
      * return:
-         * true:音乐准备完毕
+         * true:图片准备完毕
          * false:
      * */
     var initScreen = function () {
         setDream_canvas();
-        setLeft_canvas();
-        setRight_canvas();
         screenLoad();
-        dream.timer.updateQueue(initScreenListen,'initScreenListen');
+        dream.timer.updateQueue(listenInit,'listenInit');
         return true;
     };
 
-    // var setLeft_canvas = function () {
-    //     dream.screenConfig.leftCanvas = document.getElementById('left_canvas');
-    //     dream.screenConfig.leftCanvas.height = $(document).height();
-    //     dream.screenConfig.leftCanvas.width = ($(document).width()/4);
-    //     dream.screenConfig.left_canvas_height = dream.screenConfig .leftCanvas.height;
-    //     dream.screenConfig.left_canvas_width = dream.screenConfig .leftCanvas.width;
-    //     dream.screenConfig.leftCanvas .style.left = 0+'px';
-    //     dream.screen.left_ctx = dream.screenConfig .leftCanvas.getContext('2d');
-    // };
-
-    /*pixi版本*/
-    var setLeft_canvas = function () {
-        dream.screenConfig.leftPixiCanvas = new PIXI.Application(($(document).width()/4),$(document).height());
-        document.body.appendChild(dream.screenConfig.leftPixiCanvas.view);
-    };
-
+    /*
+     * 作用:
+         * 创建pixi对象,载入图片
+     * 参数:
+     * return:
+         * true:图片准备完毕
+         * false:
+     * */
     var setDream_canvas = function () {
-        dream.screenConfig.canvas = document.getElementById('dream_canvas');
-        dream.screenConfig.canvas.height = $(document).height();
-        dream.screenConfig.canvas.width = ($(document).width()/2);
-        dream.screenConfig.canvas_height = dream.screenConfig.canvas.height;
-        dream.screenConfig.canvas_width = dream.screenConfig.canvas.width;
-        dream.screenConfig.canvas.style.left = (dream.screenConfig.canvas.width/2)+'px';
-        dream.screen.ctx = dream.screenConfig.canvas.getContext('2d');
+        // debugger;
+        dream.screenConfig.pixiCanvas = new PIXI.Application(document.body.scrollWidth,document.body.scrollHeight);
+        dream.screenConfig.canvas_width = document.body.scrollWidth;
+        dream.screenConfig.canvas_height = document.body.scrollHeight;
+        dream.screenConfig.pixiCanvas.view.style.position = "absolute";
+        dream.screenConfig.pixiCanvas.view.style.display = "block";
+        $(config.insertPlace).append(dream.screenConfig.pixiCanvas.view);
+        config.init = true;
     };
 
-    var setRight_canvas = function () {
-        dream.screenConfig .rightCanvas = document.getElementById('right_canvas');
-        dream.screenConfig .rightCanvas .height = $(document).height();
-        dream.screenConfig .rightCanvas .width = ($(document).width()/4);
-        dream.screenConfig.right_canvas_height = dream.screenConfig .rightCanvas.height;
-        dream.screenConfig.right_canvas_width = dream.screenConfig .rightCanvas.width;
-        dream.screenConfig .rightCanvas.style.right = 0+'px';
-        dream.screen.right_ctx = dream.screenConfig .rightCanvas.getContext('2d');
+    var initTest = function () {
+        return config.init;
     };
+
+    var listenInit = function () {
+        var charInit = dream.screen.character.initTest();
+        var loadInit = dream.screen.load.initTest();
+        if((charInit==true)&&(loadInit===true)){
+            dream.timer.removeQueue('listenInit');
+            dream.screenConfig.initLoad = true;
+            dream.screen.bullet.init();
+            dream.screen.monster.initMonster();
+        }
+    };
+
 
     return {
         initScreen:initScreen,
-        getBackgroundName:getBackgroundName,
-        getTerrainName:getTerrainName,
-        getPhotoName:getPhotoName
+        // getBackgroundName:getBackgroundName,
+        // getTerrainName:getTerrainName,
+        initTest:initTest
+        // getPhotoName:getPhotoName
     };
 }());

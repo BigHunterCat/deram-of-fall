@@ -26,55 +26,15 @@ dream.screen.load = (function () {
 
     /*
     * 作用:
-        * dream.dream-lib.cache的回调函数
-        * 执行需要音乐素材的函数
-        * 缓存完毕时,config.init为true
-    * 参数:none
-    * return:
-        * true:资源已缓存
-        * false:none
+        * 初始化load
     * */
-    var initModule = function () {
-        config.init = true;
-        dream.screenConfig.initLoad = true;
-        return true;
+    var init = function () {
+
     };
 
     /*
     * 作用:
-    * 音乐载入好时取消事件监听并执行初始化函数
-    * 参数:none
-    * return:
-        * true : 载入完成
-        * false: 载入未完成
-    * */
-    var cache_ok = function () {
-        config.photoNum--;
-        if(config.photoNum<=0){
-            for(var photo in cache){
-                cache[photo].removeEventListener('load',cache_ok);
-            }
-            initModule();
-            return true;
-        }
-        return false;
-    };
-
-    /*
-    * 作用:
-        * 该函数给每个资源注册事件监听,以监听载入情况
-    * 参数:none
-    * return:none
-    * */
-    var photoCache = function () {
-        for(var photo in cache){
-            cache[photo].addEventListener('load',cache_ok);
-        }
-    };
-
-    /*
-    * 作用:
-        * 预读取所有需要的图片
+        * 预读取并添加所有需要的图片
     * 参数:
         * pictureName:图片名
         * pictureSrc:图片路径
@@ -83,18 +43,42 @@ dream.screen.load = (function () {
         * false:失败
     * */
     var pre_pictureLoad = function (pictureName,pictureSrc) {
-        config.photo = document.createElement('img');
-        config.photo.id = pictureName;
-        config.photo.src = pictureSrc;
-        cache[pictureName] = config.photo;
-        config.photoNum++;
+        cache[pictureName] = new PIXI.Sprite.fromImage(pictureSrc);
+        config.init = true;
         return true;
     };
 
     /*
+     * 作用:
+         * 添加指定图片到canvas中
+     * 参数:
+         * pictureName:图片名
+     * return:
+         * true:成功
+     * */
+    var stage = function (pictureName) {
+        dream.screenConfig.pixiCanvas.stage.addChild(cache[pictureName]);
+    };
+
+    /*
     * 作用:
-        * 获得指定的已缓存的图片
-        * 如果不指定返回所有已缓存图片
+        * 销毁指定图片
+    * 参数:
+        * pictureName:图片名
+    * return:
+        * true:成功
+    * */
+    var destroy = function (pictureName) {
+        console.log('done');
+        if(cache[pictureName]!==undefined){
+            cache[pictureName].destroy();
+        }
+    };
+
+    /*
+    * 作用:
+        * 获得指定的已缓存的图片精灵
+        * 如果不指定返回所有已缓存图片精灵
     * 参数:
         * pictureName:图片名
     * return:
@@ -108,7 +92,7 @@ dream.screen.load = (function () {
             }
             return cache[pictureName];
         }
-        return false;
+        return 'config.init is false.';
     };
 
     /*
@@ -127,7 +111,8 @@ dream.screen.load = (function () {
     return {
         pre_pictureLoad:pre_pictureLoad,
         getPhoto:getPhoto,
-        photoCache:photoCache,
+        stage:stage,
+        destroy:destroy,
         initTest:initTest
     };
 }());

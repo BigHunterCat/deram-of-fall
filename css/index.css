@@ -3,4 +3,16 @@
  */
 *{
     margin: 0;
+    padding:0;
+    /*display: inline;*/
 }
+
+/*body{*/
+    /*width: 0;*/
+    /*height: 0;*/
+/*}*/
+
+/*#dream{*/
+    /*position: relative;*/
+    /*display: none;*/
+/*}*/

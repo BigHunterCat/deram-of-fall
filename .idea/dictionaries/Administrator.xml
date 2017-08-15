@@ -4,6 +4,8 @@
       <w>controler</w>
       <w>keypress</w>
       <w>keyup</w>
+      <w>mousedown</w>
+      <w>mousemove</w>
       <w>rcosθ</w>
       <w>rsinθ</w>
     </words>

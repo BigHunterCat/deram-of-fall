@@ -1,32 +1,24 @@
 dream.control  = (function () {
     dream.controlConfig = {
         actor:{
-            chara: null,
-            x:0,
-            y:0,
-            width:40,
-            height:40,
-            final:false
         },
         /*
         * moveLimit需要通过初始化函数初始化
         * */
         moveLimit:{
-            edgeMniX:0,
-            edgeMaxX:0
+            edgeMinX:0,
+            edgeMaxX:0,
+            edgeMinY:0,
+            edgeMaxY:0
         }
     };
 
     var config = {
-        init:false
+        init:false,
+        actorName:'actor'
     };
 
     var initControl = function () {
-        var canvas = $('#dream_canvas');
-        dream.controlConfig.actor.x = Math.floor(parseInt(canvas.css('width'))/2);
-        dream.controlConfig.actor.y = Math.floor(parseInt(canvas.css('height'))/5);
-        dream.controlConfig.actor.width = Math.floor(parseInt(canvas.css('height'))/20);
-        dream.controlConfig.actor.height = dream.controlConfig.actor.width;
         dream.timer.updateQueue(listenControl,'listenControl');
     };
 
@@ -35,8 +27,23 @@ dream.control  = (function () {
     };
 
     var initMoveLimit = function () {
-        dream.controlConfig.moveLimit.edgeMinX = dream.screen.terrainRandom.getScreenLimit().edgeMinX;
-        dream.controlConfig.moveLimit.edgeMaxX = dream.screen.terrainRandom.getScreenLimit().edgeMaxX;
+        dream.controlConfig.moveLimit.edgeMinX = 0;
+        dream.controlConfig.moveLimit.edgeMaxX = dream.screenConfig.canvas_width - dream.controlConfig.actor.width;
+        dream.controlConfig.moveLimit.edgeMinY = 0;
+        dream.controlConfig.moveLimit.edgeMaxY = dream.screenConfig.canvas_height - dream.controlConfig.actor.height;
+    };
+
+    /*
+    * 作用:
+    * 初始化角色位置信息
+    * */
+    var initActorPosition = function () {
+        dream.controlConfig.actor = dream.screen.character.getActor();
+        dream.controlConfig.actor.x = dream.screenConfig.canvas_width/2;
+        dream.controlConfig.actor.y = dream.screenConfig.canvas_height/10;
+        dream.controlConfig.actor.width = Math.floor(dream.screenConfig.canvas_width/40);
+        dream.controlConfig.actor.height = dream.controlConfig.actor.width;
+        dream.screen.character.drawActor(config.actorName)
     };
 
     /*
@@ -53,16 +60,32 @@ dream.control  = (function () {
         if((screenInit===true)&&(musicInit===true)){
             dream.timer.removeQueue('listenControl');
             config.init = true;
-            dream.controlConfig.actor.chara = dream.screen.character.getActor();
+            clearUnnecessaryFunction();
             dream.control.keyboard.initActorControl();
+            initActorPosition();
             initMoveLimit();
+
             return true;
         }
         return false;
     };
 
+    var clearUnnecessaryFunction = function () {
+        /*
+        * 清除默认右键功能
+        * */
+        document.oncontextmenu=function(){
+            return false;
+        };
+    };
+
+    var getActor = function () {
+        return  dream.controlConfig.actor;
+    };
+
     return {
         initControl:initControl,
-        initTest:initTest
+        initTest:initTest,
+        getActor:getActor
     };
 }());
